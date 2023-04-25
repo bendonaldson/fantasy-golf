@@ -25,6 +25,13 @@ const UserSchema = new mongoose.Schema(
       required: true,
       min: 6,
     },
+    leagues: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "League",
+        default: null,
+      },
+    ],
   },
   { timestamps: true }
 );
