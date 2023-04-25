@@ -7,8 +7,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
-import { verifyToken } from "./middleware/auth.js";
-import { register } from "./controllers/auth.js";
+import usersRoutes from "./routes/users.js";
 
 /* CONFIG */
 const __filename = fileURLToPath(import.meta.url);
@@ -25,7 +24,7 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 /* ROUTES */
 app.use("/api/auth", authRoutes);
-app.use("/api/auth/register", register);
+app.use("/api/users", usersRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

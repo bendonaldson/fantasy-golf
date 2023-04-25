@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       min: 6,
     },
+    admin: {
+      type: Boolean,
+      default: false,
+    },
     leagues: [
       {
         type: mongoose.Schema.Types.ObjectId,
