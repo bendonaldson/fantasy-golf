@@ -13,32 +13,25 @@ const TeamSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    tournament: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tournament",
-      required: true,
-    },
     golfers: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Player",
         required: true,
+        default: [],
       },
     ],
-    totalWinnings: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
     wins: {
       type: Number,
       required: true,
       min: 0,
+      default: 0,
     },
     losses: {
       type: Number,
       required: true,
       min: 0,
+      default: 0,
     },
   },
   { timestamps: true }
