@@ -24,7 +24,7 @@ const LeagueSchema = new mongoose.Schema(
     rules: {
       type: String,
       required: true,
-      default: "",
+      default: "No Rules!",
     },
     teams: [
       {

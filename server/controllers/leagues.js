@@ -1,5 +1,6 @@
 import League from "../models/League.js";
 import Team from "../models/Team.js";
+import User from "../models/User.js";
 
 export const getAllLeagues = async (req, res) => {
   try {
@@ -17,8 +18,8 @@ export const getAllLeagues = async (req, res) => {
 
 export const getLeagueById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const league = await League.findById(id);
+    const { leagueId } = req.params;
+    const league = await League.findById(leagueId);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -33,13 +34,21 @@ export const getLeagueById = async (req, res) => {
 export const createLeague = async (req, res) => {
   try {
     const { name } = req.body;
-    const league = await League.create({ name });
+    const { id } = req.user;
 
-    if (!league) {
+    // Check if the league name already exists
+    const league = await League.findOne({ name: name });
+    if (league) {
+      return res.status(409).json({ message: "League name already exists!" });
+    }
+
+    const newLeague = await League.create({ name, manager: id });
+
+    if (!newLeague) {
       return res.status(404).json({ message: "No league found!" });
     }
 
-    return res.status(201).json(league);
+    return res.status(201).json(newLeague);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -47,9 +56,9 @@ export const createLeague = async (req, res) => {
 
 export const updateLeagueName = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { leagueId } = req.params;
     const { name } = req.body;
-    const league = await League.findByIdAndUpdate(id, { name });
+    const league = await League.findByIdAndUpdate(leagueId, { name });
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -63,8 +72,8 @@ export const updateLeagueName = async (req, res) => {
 
 export const getLeagueName = async (req, res) => {
   try {
-    const { id } = req.params;
-    const league = await League.findById(id);
+    const { leagueId } = req.params;
+    const league = await League.findById(leagueId);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -78,16 +87,16 @@ export const getLeagueName = async (req, res) => {
 
 export const deleteLeague = async (req, res) => {
   try {
-    const { id } = req.params;
-    const league = await League.findById(id);
+    const { leagueId } = req.params;
+    const league = await League.findById(leagueId);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
     }
 
-    await League.deleteOne({ _id: id });
+    await League.deleteOne({ _id: leagueId });
 
-    return res.status(200).json(league);
+    return res.status(200).json("League deleted successfully!");
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -96,7 +105,9 @@ export const deleteLeague = async (req, res) => {
 export const addTeamToLeague = async (req, res) => {
   try {
     const { leagueId, teamId } = req.params;
+
     const league = await League.findById(leagueId);
+    const user = await User.findById(req.user.id);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -108,11 +119,17 @@ export const addTeamToLeague = async (req, res) => {
       return res.status(404).json({ message: "No team found!" });
     }
 
+    if (league.teams.includes(teamId)) {
+      return res.status(409).json({ message: "Team already in league!" });
+    }
+
     league.teams.push(team);
+    user.leagues.push(league);
 
     await league.save();
+    await user.save();
 
-    return res.status(200).json(league);
+    return res.status(200).json("Team added to league successfully!");
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -122,6 +139,7 @@ export const removeTeamFromLeague = async (req, res) => {
   try {
     const { leagueId, teamId } = req.params;
     const league = await League.findById(leagueId);
+    const user = await User.findById(req.user.id);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -133,13 +151,20 @@ export const removeTeamFromLeague = async (req, res) => {
       return res.status(404).json({ message: "No team found!" });
     }
 
-    const index = league.teams.indexOf(team);
+    if (!league.teams.includes(teamId)) {
+      return res.status(409).json({ message: "Team not in league!" });
+    }
 
+    const index = league.teams.indexOf(team);
     league.teams.splice(index, 1);
 
-    await league.save();
+    const userIndex = user.leagues.indexOf(league);
+    user.leagues.splice(userIndex, 1);
 
-    return res.status(200).json(league);
+    await league.save();
+    await user.save();
+
+    return res.status(200).json("Team removed from league successfully!");
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -147,8 +172,8 @@ export const removeTeamFromLeague = async (req, res) => {
 
 export const getTeamsInLeague = async (req, res) => {
   try {
-    const { id } = req.params;
-    const league = await League.findById(id);
+    const { leagueId } = req.params;
+    const league = await League.findById(leagueId);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -163,7 +188,7 @@ export const getTeamsInLeague = async (req, res) => {
 export const getLeagueByTeam = async (req, res) => {
   try {
     const { teamId } = req.params;
-    const league = await League.find({ teams: teamId });
+    const league = await League.find({ teamId });
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -223,8 +248,8 @@ export const getLeagueByManager = async (req, res) => {
 
 export const getLeagueRules = async (req, res) => {
   try {
-    const { id } = req.params;
-    const league = await League.findById(id);
+    const { leagueId } = req.params;
+    const league = await League.findById(leagueId);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -238,15 +263,15 @@ export const getLeagueRules = async (req, res) => {
 
 export const updateLeagueRules = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { leagueId } = req.params;
     const { rules } = req.body;
-    const league = await League.findByIdAndUpdate(id, { rules });
+    const league = await League.findByIdAndUpdate(leagueId, { rules });
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
     }
 
-    return res.status(200).json(league);
+    return res.status(200).json("League rules updated successfully!");
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

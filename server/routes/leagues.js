@@ -11,7 +11,6 @@ import {
   removeTeamFromLeague,
   getTeamsInLeague,
   getLeagueByTeam,
-  updateManager,
   getManager,
   getLeagueByManager,
   getLeagueRules,
@@ -25,11 +24,11 @@ const router = express.Router();
 router.get("/", verifyToken, isAdmin, getAllLeagues);
 router.post("/", verifyToken, createLeague);
 
-router.get("/:id", verifyToken, isInLeague, getLeagueById);
-router.delete("/:id", verifyToken, isManager, deleteLeague);
+router.get("/:leagueId", verifyToken, isInLeague, getLeagueById);
+router.delete("/:leagueId", verifyToken, isManager, deleteLeague);
 
-router.get("/:id/name", getLeagueName);
-router.put("/:id/name", verifyToken, isAdmin, updateLeagueName);
+router.get("/:leagueId/name", verifyToken, getLeagueName);
+router.put("/:leagueId/name", verifyToken, isManager, updateLeagueName);
 
 router.post("/:leagueId/team/:teamId", verifyToken, isManager, addTeamToLeague);
 router.delete(
@@ -39,16 +38,15 @@ router.delete(
   removeTeamFromLeague
 );
 
-router.get("/:id/teams", getTeamsInLeague);
+router.get("/:leagueId/teams", verifyToken, isInLeague, getTeamsInLeague);
 
-router.get("/team/:teadId", getLeagueByTeam);
+router.get("/team/:teadId", verifyToken, isAdmin, getLeagueByTeam);
 
-router.get("/:leagueId/manager", verifyToken, isAdmin, getManager);
-router.put("/:leagueId/manager", verifyToken, isManager, updateManager);
+router.get("/:leagueId/manager", verifyToken, isInLeague, getManager);
 
-router.get("/manager/:managerId", getLeagueByManager);
+router.get("/manager/:managerId", verifyToken, isAdmin, getLeagueByManager);
 
-router.get("/:id/rules", getLeagueRules);
-router.put("/:id/rules", verifyToken, isManager, updateLeagueRules);
+router.get("/:leagueId/rules", verifyToken, getLeagueRules);
+router.put("/:leagueId/rules", verifyToken, isManager, updateLeagueRules);
 
 export default router;

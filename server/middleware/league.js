@@ -1,20 +1,22 @@
 import League from "../models/League.js";
 
-export const isInLeague = (req, res, next) => {
+export const isInLeague = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const leagueId = req.params.leagueId;
 
-    if (!id) {
+    if (!leagueId) {
       res.status(400).json({ error: "You must provide a league id." });
     }
 
-    const teamsInLeague = League.findById(id).teams;
+    const league = await League.findById(leagueId);
 
-    if (!teamsInLeague) {
+    if (!league) {
       res.status(404).json({ error: "League not found." });
     }
 
-    if (teamsInLeague.includes(req.user.id)) {
+    const teams = league.teams;
+
+    if (teams.includes(req.user.id) || req.user.admin) {
       next();
     } else {
       res.status(403).json({ error: "You are not in this league." });
@@ -24,26 +26,34 @@ export const isInLeague = (req, res, next) => {
   }
 };
 
-export const isManager = (req, res, next) => {
+export const isManager = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const leagueId = req.params.leagueId;
 
-    if (!id) {
-      res.status(400).json({ error: "You must provide a league id." });
+    if (!leagueId) {
+      return res.status(400).json({ error: "You must provide a league id." });
     }
 
-    const leagueManager = League.findById(id).manager;
+    const league = await League.findById(leagueId);
+
+    if (!league) {
+      return res.status(404).json({ error: "League not found." });
+    }
+
+    const leagueManager = league.manager;
 
     if (!leagueManager) {
-      res.status(404).json({ error: "League not found." });
+      return res.status(404).json({ error: "League manager not found." });
     }
 
-    if (leagueManager === req.user.id) {
+    if (leagueManager.toString() === req.user.id.toString() || req.user.admin) {
       next();
     } else {
-      res.status(403).json({ error: "You are not a manager of this league." });
+      return res
+        .status(403)
+        .json({ error: "You are not a manager of this league." });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
