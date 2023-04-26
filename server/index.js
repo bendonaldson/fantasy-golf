@@ -9,7 +9,6 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import usersRoutes from "./routes/users.js";
 import leagueRoutes from "./routes/leagues.js";
-import Team from "./models/Team.js";
 
 /* CONFIG */
 const __filename = fileURLToPath(import.meta.url);
