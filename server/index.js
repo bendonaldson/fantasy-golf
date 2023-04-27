@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import usersRoutes from "./routes/users.js";
 import leagueRoutes from "./routes/leagues.js";
+import teamRoutes from "./routes/teams.js";
 
 /* CONFIG */
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,7 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/leagues", leagueRoutes);
+app.use("/api/teams", teamRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

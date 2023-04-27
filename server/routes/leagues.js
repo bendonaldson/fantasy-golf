@@ -17,7 +17,7 @@ import {
   updateLeagueRules,
 } from "../controllers/leagues.js";
 import { verifyToken, isAdmin } from "../middleware/auth.js";
-import { isManager, isInLeague } from "../middleware/league.js";
+import { isManager, isInLeague } from "../middleware/leagues.js";
 
 const router = express.Router();
 
