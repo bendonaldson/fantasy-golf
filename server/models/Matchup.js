@@ -2,14 +2,16 @@ import mongoose from "mongoose";
 
 const MatchupSchema = new mongoose.Schema(
   {
-    tournament: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tournament",
-    },
     league: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "League",
       required: true,
+    },
+    week: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 52,
     },
     team1: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +22,20 @@ const MatchupSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
       required: true,
+    },
+    team1Total: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    team2Total: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    winner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
     },
   },
   { timestamps: true }

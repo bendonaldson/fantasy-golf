@@ -29,11 +29,12 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    leagues: [
+    teams: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "League",
-        default: null,
+        ref: "Team",
+        required: true,
+        default: [],
       },
     ],
   },

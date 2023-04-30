@@ -1,6 +1,5 @@
 import League from "../models/League.js";
 import Team from "../models/Team.js";
-import User from "../models/User.js";
 
 export const getAllLeagues = async (req, res) => {
   try {
@@ -107,7 +106,6 @@ export const addTeamToLeague = async (req, res) => {
     const { leagueId, teamId } = req.params;
 
     const league = await League.findById(leagueId);
-    const user = await User.findById(req.user.id);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -124,10 +122,8 @@ export const addTeamToLeague = async (req, res) => {
     }
 
     league.teams.push(team);
-    user.leagues.push(league);
 
     await league.save();
-    await user.save();
 
     return res.status(200).json("Team added to league successfully!");
   } catch (err) {
@@ -139,7 +135,6 @@ export const removeTeamFromLeague = async (req, res) => {
   try {
     const { leagueId, teamId } = req.params;
     const league = await League.findById(leagueId);
-    const user = await User.findById(req.user.id);
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -158,11 +153,7 @@ export const removeTeamFromLeague = async (req, res) => {
     const index = league.teams.indexOf(team);
     league.teams.splice(index, 1);
 
-    const userIndex = user.leagues.indexOf(league);
-    user.leagues.splice(userIndex, 1);
-
     await league.save();
-    await user.save();
 
     return res.status(200).json("Team removed from league successfully!");
   } catch (err) {
@@ -188,7 +179,7 @@ export const getTeamsInLeague = async (req, res) => {
 export const getLeagueByTeam = async (req, res) => {
   try {
     const { teamId } = req.params;
-    const league = await League.find({ teamId });
+    const league = await League.findOne({ teamId });
 
     if (!league) {
       return res.status(404).json({ message: "No league found!" });
@@ -246,7 +237,7 @@ export const getLeagueByManager = async (req, res) => {
   }
 };
 
-export const getLeagueRules = async (req, res) => {
+export const getLeagueMatchups = async (req, res) => {
   try {
     const { leagueId } = req.params;
     const league = await League.findById(leagueId);
@@ -255,23 +246,7 @@ export const getLeagueRules = async (req, res) => {
       return res.status(404).json({ message: "No league found!" });
     }
 
-    return res.status(200).json(league.rules);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-export const updateLeagueRules = async (req, res) => {
-  try {
-    const { leagueId } = req.params;
-    const { rules } = req.body;
-    const league = await League.findByIdAndUpdate(leagueId, { rules });
-
-    if (!league) {
-      return res.status(404).json({ message: "No league found!" });
-    }
-
-    return res.status(200).json("League rules updated successfully!");
+    return res.status(200).json(league.matchups);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

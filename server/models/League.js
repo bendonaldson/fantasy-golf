@@ -2,17 +2,17 @@ import mongoose from "mongoose";
 
 const LeagueSchema = new mongoose.Schema(
   {
-    manager: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
     name: {
       type: String,
       required: true,
       unique: true,
       min: 3,
       max: 50,
+    },
+    manager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     season: {
       type: Number,
@@ -21,15 +21,18 @@ const LeagueSchema = new mongoose.Schema(
       max: 3000,
       default: 2023,
     },
-    rules: {
-      type: String,
-      required: true,
-      default: "No Rules!",
-    },
     teams: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Team",
+        required: true,
+        default: [],
+      },
+    ],
+    matchups: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Matchup",
         required: true,
         default: [],
       },

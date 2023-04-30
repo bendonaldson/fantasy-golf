@@ -13,8 +13,7 @@ import {
   getLeagueByTeam,
   getManager,
   getLeagueByManager,
-  getLeagueRules,
-  updateLeagueRules,
+  getLeagueMatchups,
 } from "../controllers/leagues.js";
 import { verifyToken, isAdmin } from "../middleware/auth.js";
 import { isManager, isInLeague } from "../middleware/leagues.js";
@@ -46,7 +45,6 @@ router.get("/:leagueId/manager", verifyToken, isInLeague, getManager);
 
 router.get("/manager/:managerId", verifyToken, isAdmin, getLeagueByManager);
 
-router.get("/:leagueId/rules", verifyToken, getLeagueRules);
-router.put("/:leagueId/rules", verifyToken, isManager, updateLeagueRules);
+router.get("/:leagueId/matchups", verifyToken, isInLeague, getLeagueMatchups);
 
 export default router;

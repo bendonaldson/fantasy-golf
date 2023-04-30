@@ -4,7 +4,6 @@ import {
   getAllTeams,
   getTeamById,
   createTeam,
-  deleteTeam,
   getTeamName,
   updateTeamName,
   getTeamPlayers,
@@ -14,7 +13,7 @@ import {
 } from "../controllers/teams.js";
 
 import { verifyToken, isAdmin } from "../middleware/auth.js";
-import { isTeamManager } from "../middleware/team.js";
+import { isTeamManager } from "../middleware/teams.js";
 
 const router = express.Router();
 
@@ -22,7 +21,6 @@ router.get("/", verifyToken, isAdmin, getAllTeams);
 router.post("/", verifyToken, createTeam);
 
 router.get("/:teamId", verifyToken, isTeamManager, getTeamById);
-router.delete("/:teamId", verifyToken, isTeamManager, deleteTeam);
 
 router.get("/:teamId/name", verifyToken, isTeamManager, getTeamName);
 router.put("/:teamId/name", verifyToken, isTeamManager, updateTeamName);

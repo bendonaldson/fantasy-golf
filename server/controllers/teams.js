@@ -1,5 +1,4 @@
 import Team from "../models/Team.js";
-import User from "../models/User.js";
 import Player from "../models/Player.js";
 
 export const getAllTeams = async (req, res) => {
